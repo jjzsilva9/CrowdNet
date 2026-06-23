@@ -27,7 +27,7 @@ def load_udf(checkpoints_dir, code_file_name, model_file_name, device):
 
     return coords_encoder, latent_code, decoder
 
-def reconstruct(coords_encoder, decoder, lat, udf_max_dist=0.1, resolution=256, differentiable=False):
+def reconstruct(coords_encoder, decoder, lat, udf_max_dist=0.1, resolution=256, differentiable=False, use_fast_grid_filler=True):
     def udf_func(c):
         c = coords_encoder.encode(c.unsqueeze(0))
         p = decoder(c, lat).squeeze(0)
@@ -42,7 +42,7 @@ def reconstruct(coords_encoder, decoder, lat, udf_max_dist=0.1, resolution=256, 
         N=resolution,
         max_batch=2**16,
         differentiable=differentiable,
-        use_fast_grid_filler=True
+        use_fast_grid_filler=use_fast_grid_filler,
     )
     
     mesh = trimesh.Trimesh(v.squeeze().cpu().numpy(), t.squeeze().cpu().numpy(), process=False, valid=False)

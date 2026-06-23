@@ -7,3 +7,4 @@ meshudf/build/
 models/__pycache__/
 output/
 smpl_pytorch/__pycache__/
+CLAUDE.md
