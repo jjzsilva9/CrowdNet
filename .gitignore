@@ -14,3 +14,7 @@ external/DressCode/nn/material_gen/**/*.bin
 external/DressCode/nn/material_gen/**/*.safetensors
 external/DressCode/nn/material_gen/**/*.pt
 external/DressCode/nn/material_gen/**/*.pth
+
+# TexGaussian checkpoint (downloaded from HuggingFace)
+external/TexGaussian/checkpoints/
+*.safetensors

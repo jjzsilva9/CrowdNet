@@ -1,3 +1,6 @@
 [submodule "external/DressCode"]
 	path = external/DressCode
 	url = https://github.com/IHe-KaiI/DressCode.git
+[submodule "external/TexGaussian"]
+	path = external/TexGaussian
+	url = https://github.com/ymxbj/TexGaussian.git
