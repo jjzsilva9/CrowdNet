@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:huggingface.co)",
+      "Bash(wsl -e bash -ic \"find /home/silvajo/DressCode/nn/material_gen/ -name '*.safetensors' -o -name '*.bin' -o -name '*.pt' -o -name '*.pth' 2>/dev/null | head -20\")",
+      "Bash(wsl -e bash -ic \"ls /home/silvajo/DressCode/nn/material_gen/unet/\")",
+      "Bash(wsl -e bash -ic \"conda create -n dresscode python=3.9 -y 2>&1 | tail -5\")",
+      "Bash(wsl -e bash -ic \"conda activate dresscode && python --version\")",
+      "Bash(wsl -e bash -ic \"conda activate dresscode && conda install pytorch==2.0.0 pytorch-cuda=11.7 -c pytorch -c nvidia -y 2>&1 | tail -10\")",
+      "Bash(wsl -e bash -ic \"conda activate dresscode && pip install diffusers==0.24.0 transformers==4.35.2 accelerate 2>&1 | tail -10\")",
+      "Bash(wsl -e bash -ic \"conda activate dresscode && huggingface-cli download IHe-KaiI/DressCode material_gen/unet/diffusion_pytorch_model.bin material_gen/text_encoder/pytorch_model.bin material_gen/vae/diffusion_pytorch_model.bin material_gen/refine_vae/vae_checkpoint_diffuse/diffusion_pytorch_model.safetensors material_gen/refine_vae/vae_checkpoint_normal/diffusion_pytorch_model.safetensors material_gen/refine_vae/vae_checkpoint_roughness/diffusion_pytorch_model.safetensors material_gen/refine_vae/vae_checkpoint_diffuse/config.json material_gen/refine_vae/vae_checkpoint_normal/config.json material_gen/refine_vae/vae_checkpoint_roughness/config.json --local-dir /home/silvajo/DressCode_weights 2>&1 | tail -20\")",
+      "Bash(wsl -e bash -ic ' *)",
+      "Bash(wsl -e bash -ic \"ls /home/silvajo/DressCode/nn/material_gen/refine_vae/vae_checkpoint_diffuse/\")",
+      "Bash(wsl -e bash -ic \"conda activate dresscode && cd /home/silvajo/CrowdNet && python test_dresscode_texgen.py\")"
+    ]
+  }
+}

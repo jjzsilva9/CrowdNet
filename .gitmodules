@@ -1,0 +1,3 @@
+[submodule "external/DressCode"]
+	path = external/DressCode
+	url = https://github.com/IHe-KaiI/DressCode.git

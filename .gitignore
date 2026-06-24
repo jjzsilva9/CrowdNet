@@ -8,3 +8,9 @@ models/__pycache__/
 output/
 smpl_pytorch/__pycache__/
 CLAUDE.md
+
+# DressCode submodule weights (downloaded via setup_dresscode.sh)
+external/DressCode/nn/material_gen/**/*.bin
+external/DressCode/nn/material_gen/**/*.safetensors
+external/DressCode/nn/material_gen/**/*.pt
+external/DressCode/nn/material_gen/**/*.pth
