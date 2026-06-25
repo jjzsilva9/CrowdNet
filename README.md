@@ -12,4 +12,28 @@ The pipeline uses fast feed-forward garment generation built on [DrapeNet](https
 - **DressCode** — tile-based PBR material generation, applied in UV space.
 - **TexGaussian** — feed-forward per-Gaussian PBR for relightable Gaussian-splat rendering.
 
-DressCode and TexGaussian are included as submodules: `git clone --recursive`, or `git submodule update --init --recursive`.
+DressCode, TexGaussian, and Relightable 3D Gaussian are included as submodules: `git clone --recursive`, or `git submodule update --init --recursive`.
+
+## Scripts
+
+### Garment generation (`drapenet` env)
+
+| Script | What it does |
+|---|---|
+| `generate_one.py` | Generate a single garment mesh (smoke test) |
+| `sample_variety.py` | Sample many garments from the latent space |
+| `resolution_sweep.py` | Sweep MeshUDF grid resolution vs cost for geometry LOD |
+
+### Texturing — TexGaussian (`texgaussian` env)
+
+| Script | What it does |
+|---|---|
+| `render_pbr.py` | Render PBR gaussian splats using R3DG's GGX specular + environment map lighting |
+| `bake_pbr.py` | Bake gaussian PBR textures onto UV maps → single OBJ + MTL with albedo and metallic-roughness texture maps |
+
+### Texturing — DressCode (`dresscode` env)
+
+| Script | What it does |
+|---|---|
+| `generate_dresscode_textures.py` | Generate PBR texture maps (diffuse, normal, roughness) from a text prompt |
+| `apply_dresscode_textures.py` | UV unwrap a bare mesh with xatlas and apply DressCode textures → textured OBJ + MTL |
