@@ -4,3 +4,6 @@
 [submodule "external/TexGaussian"]
 	path = external/TexGaussian
 	url = https://github.com/ymxbj/TexGaussian.git
+[submodule "external/Relightable3DGaussian"]
+	path = external/Relightable3DGaussian
+	url = https://github.com/NJU-3DV/Relightable3DGaussian.git
