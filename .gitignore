@@ -18,3 +18,7 @@ external/DressCode/nn/material_gen/**/*.pth
 # TexGaussian checkpoint (downloaded from HuggingFace)
 external/TexGaussian/checkpoints/
 *.safetensors
+
+# TexVerse metadata (downloaded by build_garment_manifest.py)
+texverse/caption.json
+texverse/TexVerse_pbr_id_list.txt
