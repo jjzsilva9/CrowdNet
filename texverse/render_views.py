@@ -325,25 +325,32 @@ def _try_radius_search(cam, test_poses, test_path, target, start_radius, scene):
     r_lo = r_hi * 0.3
     for i in range(8):
         r_mid = (r_lo + r_hi) / 2
+
+        # check coverage from first pose (fast)
         set_camera_pose(cam, test_poses[0][0], test_poses[0][1], r_mid, target=target)
         scene.render.filepath = test_path
         bpy.ops.render.render(write_still=True)
         alpha = read_alpha(test_path)
         coverage = get_coverage(alpha)
-        clipped = check_clipping(alpha)
+        front_clip = check_clipping(alpha)
 
-        if clipped:
+        if front_clip:
             r_lo = r_mid
-            print(f"    r={r_mid:.2f} clips")
+            print(f"    r={r_mid:.2f} clips (front)")
         elif coverage < best_coverage - 0.02:
-            # coverage dropped — camera has passed through the model; stop here
             print(f"    r={r_mid:.2f} coverage dropped {best_coverage:.1%}→{coverage:.1%}, stopping")
             break
         else:
-            best_coverage = max(best_coverage, coverage)
-            best_radius = r_mid
-            r_hi = r_mid
-            print(f"    r={r_mid:.2f} OK (coverage={coverage:.1%})")
+            # front is OK — now verify all other poses don't clip
+            any_clip = _clips_any_view(cam, test_poses[1:], test_path, target, r_mid, scene)
+            if any_clip:
+                r_lo = r_mid
+                print(f"    r={r_mid:.2f} clips (side view)")
+            else:
+                best_coverage = max(best_coverage, coverage)
+                best_radius = r_mid
+                r_hi = r_mid
+                print(f"    r={r_mid:.2f} OK (coverage={coverage:.1%})")
         if (r_hi - r_lo) / r_hi < 0.03:
             break
 
