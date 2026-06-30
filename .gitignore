@@ -29,3 +29,5 @@ texverse/glbs/
 texverse/renders/
 texverse/pointclouds/
 texverse/workspace/
+texverse/flagged_renders.txt
+texverse/flagged_renders.txt:Zone.Identifier
