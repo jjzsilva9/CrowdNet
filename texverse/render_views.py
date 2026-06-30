@@ -295,10 +295,19 @@ def _clips_any_view(cam, test_poses, test_path, target, radius, scene):
 
 
 def _try_radius_search(cam, test_poses, test_path, target, start_radius, scene):
-    set_camera_pose(cam, test_poses[0][0], test_poses[0][1], start_radius, target=target)
-    scene.render.filepath = test_path
-    bpy.ops.render.render(write_still=True)
-    if get_coverage(read_alpha(test_path)) < 0.01:
+    # probe multiple radii to find one where model is visible
+    probe_radius = start_radius
+    visible = False
+    for _ in range(8):
+        set_camera_pose(cam, test_poses[0][0], test_poses[0][1], probe_radius, target=target)
+        scene.render.filepath = test_path
+        bpy.ops.render.render(write_still=True)
+        if get_coverage(read_alpha(test_path)) >= 0.01:
+            visible = True
+            start_radius = probe_radius
+            break
+        probe_radius *= 0.3  # zoom in aggressively
+    if not visible:
         return None
 
     r_hi = start_radius
@@ -306,25 +315,44 @@ def _try_radius_search(cam, test_poses, test_path, target, start_radius, scene):
         r_hi *= 1.3
         print(f"    Zooming out to r={r_hi:.2f}")
 
+    # get baseline coverage at the safe starting radius
+    set_camera_pose(cam, test_poses[0][0], test_poses[0][1], r_hi, target=target)
+    scene.render.filepath = test_path
+    bpy.ops.render.render(write_still=True)
+    best_coverage = get_coverage(read_alpha(test_path))
+    best_radius = r_hi
+
     r_lo = r_hi * 0.3
     for i in range(8):
         r_mid = (r_lo + r_hi) / 2
-        if _clips_any_view(cam, test_poses, test_path, target, r_mid, scene):
+        set_camera_pose(cam, test_poses[0][0], test_poses[0][1], r_mid, target=target)
+        scene.render.filepath = test_path
+        bpy.ops.render.render(write_still=True)
+        alpha = read_alpha(test_path)
+        coverage = get_coverage(alpha)
+        clipped = check_clipping(alpha)
+
+        if clipped:
             r_lo = r_mid
             print(f"    r={r_mid:.2f} clips")
+        elif coverage < best_coverage - 0.02:
+            # coverage dropped — camera has passed through the model; stop here
+            print(f"    r={r_mid:.2f} coverage dropped {best_coverage:.1%}→{coverage:.1%}, stopping")
+            break
         else:
+            best_coverage = max(best_coverage, coverage)
+            best_radius = r_mid
             r_hi = r_mid
-            print(f"    r={r_mid:.2f} OK")
+            print(f"    r={r_mid:.2f} OK (coverage={coverage:.1%})")
         if (r_hi - r_lo) / r_hi < 0.03:
             break
 
-    radius = r_hi
-    set_camera_pose(cam, test_poses[0][0], test_poses[0][1], radius, target=target)
+    set_camera_pose(cam, test_poses[0][0], test_poses[0][1], best_radius, target=target)
     scene.render.filepath = test_path
     bpy.ops.render.render(write_still=True)
     coverage = get_coverage(read_alpha(test_path))
-    print(f"    Final: radius={radius:.2f}, coverage={coverage:.1%}")
-    return radius
+    print(f"    Final: radius={best_radius:.2f}, coverage={coverage:.1%}")
+    return best_radius
 
 
 def _cleanup_tmp(tmp_dir):
@@ -344,7 +372,8 @@ def find_optimal_framing(cam, test_poses, tmp_dir, target, extent):
     tmp_dir.mkdir(parents=True, exist_ok=True)
     test_path = str(tmp_dir / "test.png")
 
-    default_radius = extent * 2.5
+    # clamp to avoid near-zero radius when normalize_scene fails on complex hierarchies
+    default_radius = max(extent * 2.5, 0.5)
     result = _try_radius_search(cam, test_poses, test_path, target, default_radius, scene)
 
     if result is not None:
